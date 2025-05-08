@@ -6,23 +6,27 @@
     <title>دارتینو</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        body {
+        html, body {
             margin: 0;
             padding: 0;
-            overflow: hidden;
-            background-image: url('background.jpg');
+            height: 100%;
+            background: url('background.jpg') no-repeat center center fixed;
             background-size: cover;
             font-family: sans-serif;
             direction: rtl;
             color: white;
         }
+
         #gameCanvas {
             display: block;
-            margin: auto;
-            background-color: transparent;
+            margin: 50px auto 0 auto;
+            max-width: 90vw;
+            height: auto;
+            background-color: rgba(0,0,0,0.2);
         }
+
         #scoreboard {
-            position: absolute;
+            position: fixed;
             top: 10px;
             right: 10px;
             background: rgba(0,0,0,0.6);
@@ -39,7 +43,7 @@
         <div id="totalScore">امتیاز کل: ۰</div>
         <div id="throwsLeft">پرتاب‌های باقی‌مانده: ۵</div>
     </div>
-    <canvas id="gameCanvas" width="600" height="600"></canvas>
+    <canvas id="gameCanvas" width="300" height="300"></canvas>
     <audio id="throwSound" src="throw.mp3" preload="auto"></audio>
     <script>
         const canvas = document.getElementById("gameCanvas");
@@ -53,11 +57,10 @@
             const centerX = canvas.width / 2;
             const centerY = canvas.height / 2;
             const rings = [
-                { radius: 250, score: 10 },
-                { radius: 200, score: 20 },
-                { radius: 150, score: 30 },
-                { radius: 100, score: 40 },
-                { radius: 50, score: 50 }
+                { radius: 120, score: 10 },
+                { radius: 90, score: 20 },
+                { radius: 60, score: 30 },
+                { radius: 30, score: 50 }
             ];
 
             for (let ring of rings) {
@@ -76,11 +79,10 @@
             const dy = y - centerY;
             const dist = Math.sqrt(dx * dx + dy * dy);
 
-            if (dist <= 50) return 50;
-            if (dist <= 100) return 40;
-            if (dist <= 150) return 30;
-            if (dist <= 200) return 20;
-            if (dist <= 250) return 10;
+            if (dist <= 30) return 50;
+            if (dist <= 60) return 30;
+            if (dist <= 90) return 20;
+            if (dist <= 120) return 10;
             return 0;
         }
 
@@ -106,7 +108,7 @@
             throwSound.play();
 
             ctx.beginPath();
-            ctx.arc(x, y, 5, 0, 2 * Math.PI);
+            ctx.arc(x, y, 4, 0, 2 * Math.PI);
             ctx.fillStyle = "red";
             ctx.fill();
         });
