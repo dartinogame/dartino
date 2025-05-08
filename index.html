@@ -1,0 +1,115 @@
+
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <title>دارتو</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-image: url('background.jpg');
+            background-size: cover;
+            font-family: sans-serif;
+            direction: rtl;
+            color: white;
+        }
+        #gameCanvas {
+            display: block;
+            margin: auto;
+            background-color: transparent;
+        }
+        #scoreboard {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.6);
+            padding: 10px;
+            border-radius: 10px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div id="scoreboard">
+        <div id="lastScore">امتیاز پرتاب: ۰</div>
+        <div id="totalScore">امتیاز کل: ۰</div>
+        <div id="throwsLeft">پرتاب‌های باقی‌مانده: ۵</div>
+    </div>
+    <canvas id="gameCanvas" width="600" height="600"></canvas>
+    <audio id="throwSound" src="throw.mp3"></audio>
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+        const throwSound = document.getElementById("throwSound");
+
+        let totalScore = 0;
+        let throws = 0;
+
+        function drawTarget() {
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const rings = [
+                { radius: 250, score: 10 },
+                { radius: 200, score: 20 },
+                { radius: 150, score: 30 },
+                { radius: 100, score: 40 },
+                { radius: 50, score: 50 }
+            ];
+
+            for (let ring of rings) {
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, ring.radius, 0, 2 * Math.PI);
+                ctx.strokeStyle = "white";
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            }
+        }
+
+        function getScore(x, y) {
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const dx = x - centerX;
+            const dy = y - centerY;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+
+            if (dist <= 50) return 50;
+            if (dist <= 100) return 40;
+            if (dist <= 150) return 30;
+            if (dist <= 200) return 20;
+            if (dist <= 250) return 10;
+            return 0;
+        }
+
+        function updateScoreboard(last, total, remaining) {
+            document.getElementById("lastScore").innerText = `امتیاز پرتاب: ${last}`;
+            document.getElementById("totalScore").innerText = `امتیاز کل: ${total}`;
+            document.getElementById("throwsLeft").innerText = `پرتاب‌های باقی‌مانده: ${remaining}`;
+        }
+
+        canvas.addEventListener("click", function(event) {
+            if (throws >= 5) return;
+
+            const rect = canvas.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+
+            const score = getScore(x, y);
+            totalScore += score;
+            throws++;
+            updateScoreboard(score, totalScore, 5 - throws);
+
+            throwSound.currentTime = 0;
+            throwSound.play();
+
+            ctx.beginPath();
+            ctx.arc(x, y, 5, 0, 2 * Math.PI);
+            ctx.fillStyle = "red";
+            ctx.fill();
+        });
+
+        drawTarget();
+    </script>
+</body>
+</html>
